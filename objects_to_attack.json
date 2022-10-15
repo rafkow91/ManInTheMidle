@@ -1,0 +1,12 @@
+[
+  {
+    "attacked_ip": "192.168.66.102",
+    "attacked_mac": "08:00:27:9b:1a:4b",
+    "swapped_ip": "192.168.66.1"
+  },
+  {
+    "attacked_ip": "192.168.66.1",
+    "attacked_mac": "08:00:27:d6:f6:a4",
+    "swapped_ip": "192.168.66.1"
+  }
+]
