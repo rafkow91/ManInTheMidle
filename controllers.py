@@ -48,6 +48,7 @@ class HackByArp():
     def attack(self):
         victim_arp = self.create_packet(self.victim)
         router_arp = self.create_packet(self.router)
+        print(victim_arp, router_arp)
         while True:
             try:
                 send(victim_arp)
