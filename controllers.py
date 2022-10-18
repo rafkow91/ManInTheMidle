@@ -15,7 +15,7 @@ class AbstractController(ABC):
         pass
 
 
-class HackByArp(AbstractController):
+class HackByArp():
     def __init__(self, parameters: dict = None) -> None:
         if parameters is not None:
             try:

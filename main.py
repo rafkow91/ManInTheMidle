@@ -28,15 +28,9 @@ if __name__ == '__main__':
 
     mode = OPTIONS[choice]()
     results = mode.run()
-    try:
-        i = int(input('\n\nHow many times do you want to send arp response?\t'))
-    except ValueError:
-        print('Wrong input! Objects are hacking 200 times per object')
-        i = 200
     for item in results:
         app = HackByArp(item)
-        app.run(i)
-        sleep(2)
+        app.attack()
         print('Done!')
     
     clear_console()
