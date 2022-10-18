@@ -25,7 +25,7 @@ if __name__ == '__main__':
     #         choice = input('\tYour choice:\t')
     #     else:
     #         break
-    choice = 1
+    choice = '1'
     mode = OPTIONS[choice]()
     results = mode.run()
     for item in results:
